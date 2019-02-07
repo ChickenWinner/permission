@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd"
+>
+
+    <!-- 自动配置处理器适配器、映射器、数据绑定等一系列功能 -->
+    <!-- 允许注解驱动 -->
+    <mvc:annotation-driven/>
+
+    <!-- 扫描注解 -->
+    <context:component-scan base-package="com.imp.controller"/>
+
+    <!--&lt;!&ndash;配置视图解析器->显示jsp 	&ndash;&gt;-->
+    <!--<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">-->
+        <!--<property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>-->
+        <!--&lt;!&ndash; 配置视图解析器的前缀和后缀 &ndash;&gt;-->
+        <!--&lt;!&ndash;/指webapp&ndash;&gt;-->
+        <!--<property name="prefix" value="/WEB-INF/views/"/>-->
+        <!--<property name="suffix" value=".jsp"/>-->
+    <!--</bean>-->
+
+    <!-- 视图解析器 -->
+    <bean
+            class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+        <!-- 页面视图 -->
+        <property name="viewResolvers">
+            <list>
+                <bean
+                        class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+                    <property name="prefix" value="/WEB-INF/views/"></property>
+                    <property name="suffix" value=".jsp"></property>
+                </bean>
+            </list>
+        </property>
+        <!-- 异常处理器中,modelName为jsonView的返回json数据-->
+        <property name="defaultViews">
+            <list>
+                <bean  id="jsonView"
+                        class="org.springframework.web.servlet.view.json.MappingJackson2JsonView">
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+
+    <!-- 静态资源默认servlet配置
+     1.加入对静态资源的处理:js,gif,png
+     2.允许使用"/"做整体映射 -->
+    <!--<mvc:resources mapping="/resources/**" location="/resources/" />-->
+    <!--<mvc:default-servlet-handler/>-->
+    <mvc:resources location="/js/" mapping="/js/**"/>
+    <mvc:resources location="/css/" mapping="/css/**"/>
+    <mvc:resources location="/bootstrap3.3.5/" mapping="/bootstrap3.3.5/**"/>
+    <mvc:resources location="/assets/" mapping="/assets/**"/>
+    <mvc:resources location="/ztree/" mapping="/ztree/**"/>
+
+    <!-- 注入全局异常处理器 -->
+    <bean class="com.imp.common.SpringExceptionResolver"/>
+
+    <!-- 上下文工具 -->
+    <bean class="com.imp.common.ApplicationContextHelper" lazy-init="false" />
+
+    <!-- 注入拦截器 -->
+    <mvc:interceptors>
+        <bean class="com.imp.interceptors.HttpInterceptor" />
+    </mvc:interceptors>
+
+</beans>
