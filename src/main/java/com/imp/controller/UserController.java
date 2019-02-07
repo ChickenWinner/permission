@@ -38,6 +38,7 @@ public class UserController {
         // 待跳转的界面(可能有或无)
         String ret = request.getParameter("ret");
 
+        // 判断各种参数
         if (StringUtils.isBlank(username)) {
             errorMsg = "用户名不可以为空";
         } else if (StringUtils.isBlank(password)) {
@@ -49,13 +50,17 @@ public class UserController {
         } else if (sysUser.getStatus() != 1) {
             errorMsg = "用户已被冻结，请联系管理员";
         } else {
-            // login success
+            // 登录成功
+            // 存储用户信息
             request.getSession().setAttribute("user", sysUser);
             if (StringUtils.isNotBlank(ret)) {
                 // 跳转界面
                 response.sendRedirect(ret);
+                return;
             } else {
+                // 跳转到管理员界面
                 response.sendRedirect("/admin/index.page"); //TODO
+                return;
             }
         }
 

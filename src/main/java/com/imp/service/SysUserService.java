@@ -1,6 +1,8 @@
 package com.imp.service;
 
 import com.google.common.base.Preconditions;
+import com.imp.beans.PageQuery;
+import com.imp.beans.PageResult;
 import com.imp.dao.SysUserMapper;
 import com.imp.exception.ParamException;
 import com.imp.model.SysUser;
@@ -12,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Imp
@@ -79,7 +82,20 @@ public class SysUserService {
 //        sysLogService.saveUserLog(before, after);
     }
 
-
+    // 分页查询部门下的用户
+    public PageResult<SysUser> getPageByDeptId(int deptId, PageQuery page) {
+        BeanValidator.check(page);
+        // 查询人数
+        int count = sysUserMapper.countByDeptId(deptId);
+        // 人数是否大于0
+        if (count > 0) {
+            // 大于0 查询用户集合并返回
+            List<SysUser> list = sysUserMapper.getPageByDeptId(deptId, page);
+            return PageResult.<SysUser>builder().total(count).data(list).build();
+        }
+        // 否则返回空
+        return PageResult.<SysUser>builder().build();
+    }
 
 
 
@@ -97,4 +113,6 @@ public class SysUserService {
     public SysUser findByKeyword(String keyWord) {
         return sysUserMapper.findByKeyword(keyWord);
     }
+
+
 }

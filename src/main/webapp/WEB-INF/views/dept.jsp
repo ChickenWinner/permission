@@ -326,6 +326,7 @@
             loadUserList(deptId);
         }
 
+        // 加载用户列表
         function loadUserList(deptId) {
             var pageSize = $("#pageSize").val();
             var url = "/sys/user/page.json?deptId=" + deptId;

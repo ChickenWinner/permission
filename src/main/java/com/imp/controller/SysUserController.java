@@ -1,5 +1,7 @@
 package com.imp.controller;
 
+import com.imp.beans.PageQuery;
+import com.imp.beans.PageResult;
 import com.imp.common.JsonData;
 import com.imp.dto.DeptLevelDto;
 import com.imp.param.DeptParam;
@@ -39,5 +41,12 @@ public class SysUserController {
         // 得到部门树
         sysUserService.update(param);
         return JsonData.success("更新用户成功");
+    }
+
+    @RequestMapping("page.json")
+    @ResponseBody
+    public JsonData listUsers(int deptId, PageQuery pageQuery) {
+        PageResult pageResult = sysUserService.getPageByDeptId(deptId, pageQuery);
+        return JsonData.success(pageResult);
     }
 }
