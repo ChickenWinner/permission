@@ -3,11 +3,13 @@ package com.imp.service;
 import com.google.common.base.Preconditions;
 import com.imp.beans.PageQuery;
 import com.imp.beans.PageResult;
+import com.imp.common.RequestHolder;
 import com.imp.dao.SysUserMapper;
 import com.imp.exception.ParamException;
 import com.imp.model.SysUser;
 import com.imp.param.UserParam;
 import com.imp.util.BeanValidator;
+import com.imp.util.IpUtil;
 import com.imp.util.MD5Util;
 import com.imp.util.PasswordUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,18 +43,18 @@ public class SysUserService {
         if(checkTelephoneExist(param.getTelephone(), param.getId())) {
             throw new ParamException("telephone已经存在");
         }
-        // TODO:随机密码
+
         String password = PasswordUtil.randomPassword();
         password = "112233";
         // 加密密码
         String encryptedPassword = MD5Util.encrypt(password);
-        //TODO 发送邮件
+        //TODO 发送密码到邮箱
         // 构造新增对象
         SysUser user = SysUser.builder().username(param.getUsername()).telephone(param.getTelephone()).
                 mail(param.getMail()).password(encryptedPassword).deptId(param.getDeptId()).
                 status(param.getStatus()).remark(param.getRemark()).build();
-        user.setOperator("system");
-        user.setOperateIp("127.0.0.1");
+        user.setOperator(RequestHolder.getCurrentUser().getUsername());
+        user.setOperateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
         user.setOperateTime(new Date());
 
         sysUserMapper.insertSelective(user);
@@ -75,8 +77,8 @@ public class SysUserService {
         SysUser after = SysUser.builder().id(param.getId()).username(param.getUsername()).
                 telephone(param.getTelephone()).mail(param.getMail()).deptId(param.getDeptId()).
                 status(param.getStatus()).remark(param.getRemark()).build();
-        after.setOperator("system");
-        after.setOperateIp("127.0.0.1");
+        after.setOperator(RequestHolder.getCurrentUser().getUsername());
+        after.setOperateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
         after.setOperateTime(new Date());
         sysUserMapper.updateByPrimaryKeySelective(after);
 //        sysLogService.saveUserLog(before, after);

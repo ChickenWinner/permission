@@ -1,11 +1,13 @@
 package com.imp.service;
 
 import com.google.common.base.Preconditions;
+import com.imp.common.RequestHolder;
 import com.imp.dao.SysDeptMapper;
 import com.imp.exception.ParamException;
 import com.imp.model.SysDept;
 import com.imp.param.DeptParam;
 import com.imp.util.BeanValidator;
+import com.imp.util.IpUtil;
 import com.imp.util.LevelUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,8 +44,8 @@ public class SysDeptService {
                 .seq(deptParam.getSeq()).remark(deptParam.getRemark()).build();
         sysDept.setLevel
                 (LevelUtil.calculateLevel(getLevel(deptParam.getParentId()),deptParam.getParentId()));
-        sysDept.setOperateIp("127.0.0.1"); // TODO
-        sysDept.setOperator("system"); // TODO
+        sysDept.setOperateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
+        sysDept.setOperator(RequestHolder.getCurrentUser().getUsername());
         sysDept.setOperateTime(new Date());
         sysDeptMapper.insertSelective(sysDept);
     }
@@ -63,8 +65,8 @@ public class SysDeptService {
         SysDept after = SysDept.builder().id(param.getId()).name(param.getName())
                 .parentId(param.getParentId()).seq(param.getSeq()).remark(param.getRemark()).build();
         after.setLevel(LevelUtil.calculateLevel(getLevel(param.getParentId()), param.getParentId()));
-        after.setOperator("system-update");
-        after.setOperateIp("127.0.0.1");
+        after.setOperator(RequestHolder.getCurrentUser().getUsername());
+        after.setOperateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
         after.setOperateTime(new Date());
 
         updateWithChild(before, after);
