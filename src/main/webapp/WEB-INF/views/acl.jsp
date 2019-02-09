@@ -226,6 +226,7 @@
         var lastClickAclModuleId = -1;
 
         var aclModuleListTemplate = $('#aclModuleListTemplate').html();
+        // 解析模板
         Mustache.parse(aclModuleListTemplate);
         var aclListTemplate = $('#aclListTemplate').html();
         Mustache.parse(aclListTemplate);
