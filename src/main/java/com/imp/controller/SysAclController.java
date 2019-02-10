@@ -5,6 +5,7 @@ import com.imp.beans.PageQuery;
 import com.imp.common.JsonData;
 import com.imp.model.SysRole;
 import com.imp.param.AclParam;
+import com.imp.service.SysAclService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,30 +21,29 @@ import java.util.Map;
 @Slf4j
 public class SysAclController {
 
-//    @Resource
-//    private SysAclService sysAclService;
+    @Resource
+    private SysAclService sysAclService;
 //    @Resource
 //    private SysRoleService sysRoleService;
 
     @RequestMapping("/save.json")
     @ResponseBody
     public JsonData saveAclModule(AclParam param) {
-        //sysAclService.save(param);
+        sysAclService.save(param);
         return JsonData.success();
     }
 
     @RequestMapping("/update.json")
     @ResponseBody
     public JsonData updateAclModule(AclParam param) {
-        //sysAclService.update(param);
+        sysAclService.update(param);
         return JsonData.success();
     }
 
     @RequestMapping("/page.json")
     @ResponseBody
     public JsonData list(@RequestParam("aclModuleId") Integer aclModuleId, PageQuery pageQuery) {
-        //return JsonData.success(sysAclService.getPageByAclModuleId(aclModuleId, pageQuery));
-        return null;
+        return JsonData.success(sysAclService.getPageByAclModuleId(aclModuleId, pageQuery));
     }
 
     @RequestMapping("acls.json")
