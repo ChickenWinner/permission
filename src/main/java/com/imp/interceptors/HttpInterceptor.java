@@ -45,7 +45,7 @@ public class HttpInterceptor extends HandlerInterceptorAdapter {
     }
 
     // 清除threadLocal的值
-    public void removeThreadLocalInfo() {
+    private void removeThreadLocalInfo() {
         RequestHolder.remove();;
     }
 }
