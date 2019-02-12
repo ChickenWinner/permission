@@ -18,7 +18,6 @@ public interface SysRoleMapper {
 
     int updateByPrimaryKey(SysRole record);
 
-
     List<SysRole> getAll();
 
     int countByName(@Param("name") String name, @Param("id") Integer id);

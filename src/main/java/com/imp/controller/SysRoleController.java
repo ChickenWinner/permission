@@ -4,7 +4,10 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.imp.common.JsonData;
 import com.imp.param.RoleParam;
+import com.imp.service.SysRoleAclService;
 import com.imp.service.SysRoleService;
+import com.imp.service.SysTreeService;
+import com.imp.util.StringUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,10 +26,10 @@ public class SysRoleController {
 
     @Resource
     private SysRoleService sysRoleService;
-//    @Resource
-//    private SysTreeService sysTreeService;
-//    @Resource
-//    private SysRoleAclService sysRoleAclService;
+    @Resource
+    private SysTreeService sysTreeService;
+    @Resource
+    private SysRoleAclService sysRoleAclService;
 //    @Resource
 //    private SysRoleUserService sysRoleUserService;
 //    @Resource
@@ -57,19 +60,19 @@ public class SysRoleController {
         return JsonData.success(sysRoleService.getAll());
     }
 
-//    @RequestMapping("/roleTree.json")
-//    @ResponseBody
-//    public JsonData roleTree(@RequestParam("roleId") int roleId) {
-//        return JsonData.success(sysTreeService.roleTree(roleId));
-//    }
-//
-//    @RequestMapping("/changeAcls.json")
-//    @ResponseBody
-//    public JsonData changeAcls(@RequestParam("roleId") int roleId, @RequestParam(value = "aclIds", required = false, defaultValue = "") String aclIds) {
-//        List<Integer> aclIdList = StringUtil.splitToListInt(aclIds);
-//        sysRoleAclService.changeRoleAcls(roleId, aclIdList);
-//        return JsonData.success();
-//    }
+    @RequestMapping("/roleTree.json")
+    @ResponseBody
+    public JsonData roleTree(@RequestParam("roleId") int roleId) {
+        return JsonData.success(sysTreeService.roleTree(roleId));
+    }
+
+    @RequestMapping("/changeAcls.json")
+    @ResponseBody
+    public JsonData changeAcls(@RequestParam("roleId") int roleId, @RequestParam(value = "aclIds", required = false, defaultValue = "") String aclIds) {
+        List<Integer> aclIdList = StringUtil.splitToListInt(aclIds);
+        sysRoleAclService.changeRoleAcls(roleId, aclIdList);
+        return JsonData.success();
+    }
 //
 //    @RequestMapping("/changeUsers.json")
 //    @ResponseBody
