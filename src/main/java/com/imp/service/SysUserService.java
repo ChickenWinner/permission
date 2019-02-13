@@ -116,5 +116,8 @@ public class SysUserService {
         return sysUserMapper.findByKeyword(keyWord);
     }
 
-
+    // 得到所有用户
+    public List<SysUser> getAll() {
+        return sysUserMapper.getAll();
+    }
 }
