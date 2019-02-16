@@ -3,6 +3,7 @@ package com.imp.service;
 import com.google.common.base.Preconditions;
 import com.imp.common.RequestHolder;
 import com.imp.dao.SysDeptMapper;
+import com.imp.dao.SysUserMapper;
 import com.imp.exception.ParamException;
 import com.imp.model.SysDept;
 import com.imp.param.DeptParam;
@@ -30,6 +31,8 @@ public class SysDeptService {
 
     @Autowired
     private SysDeptMapper sysDeptMapper;
+    @Autowired
+    private SysUserMapper sysUserMapper;
 
     // 新增部门
     public void save(DeptParam deptParam) {
@@ -113,4 +116,19 @@ public class SysDeptService {
         return sysDept.getLevel();
     }
 
+    // 删除部门
+    public void delete(int deptId) {
+        // 判断部门是否存在
+        SysDept dept = sysDeptMapper.selectByPrimaryKey(deptId);
+        Preconditions.checkNotNull(dept, "待删除的部门不存在，无法删除");
+        // 删除的部门下是否有子部门
+        if (sysDeptMapper.countByParentId(dept.getId()) > 0) {
+            throw new ParamException("当前部门下面有子部门，无法删除");
+        }
+        // 删除的部门下是否有用户
+        if(sysUserMapper.countByDeptId(dept.getId()) > 0) {
+            throw new ParamException("当前部门下面有用户，无法删除");
+        }
+        sysDeptMapper.deleteByPrimaryKey(deptId);
+    }
 }

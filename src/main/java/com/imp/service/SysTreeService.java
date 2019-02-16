@@ -36,6 +36,7 @@ public class SysTreeService {
     @Resource
     private SysAclMapper sysAclMapper;
 
+    // 获取用户已拥有的的权限
     public List<AclModuleLevelDto> userAclTree(int userId) {
         List<SysAcl> userAclList = sysCoreService.getUserAclList(userId);
         List<AclDto> aclDtoList = Lists.newArrayList();
@@ -192,7 +193,7 @@ public class SysTreeService {
     // level:0, 0, all 0->0.1,0.2
     // level:0.1
     // level:0.2
-    public void transformDeptTree(List<DeptLevelDto> deptLevelList, String level, Multimap<String, DeptLevelDto> levelDeptMap) {
+    private void transformDeptTree(List<DeptLevelDto> deptLevelList, String level, Multimap<String, DeptLevelDto> levelDeptMap) {
         for (int i = 0; i < deptLevelList.size(); i++) {
             // 遍历该层的每个元素
             DeptLevelDto deptLevelDto = deptLevelList.get(i);
@@ -211,19 +212,19 @@ public class SysTreeService {
         }
     }
 
-    public Comparator<DeptLevelDto> deptSeqComparator = new Comparator<DeptLevelDto>() {
+    private Comparator<DeptLevelDto> deptSeqComparator = new Comparator<DeptLevelDto>() {
         public int compare(DeptLevelDto o1, DeptLevelDto o2) {
             return o1.getSeq() - o2.getSeq();
         }
     };
 
-    public Comparator<AclModuleLevelDto> aclModuleSeqComparator = new Comparator<AclModuleLevelDto>() {
+    private Comparator<AclModuleLevelDto> aclModuleSeqComparator = new Comparator<AclModuleLevelDto>() {
         public int compare(AclModuleLevelDto o1, AclModuleLevelDto o2) {
             return o1.getSeq() - o2.getSeq();
         }
     };
 
-    public Comparator<AclDto> aclSeqComparator = new Comparator<AclDto>() {
+    private Comparator<AclDto> aclSeqComparator = new Comparator<AclDto>() {
         public int compare(AclDto o1, AclDto o2) {
             return o1.getSeq() - o2.getSeq();
         }

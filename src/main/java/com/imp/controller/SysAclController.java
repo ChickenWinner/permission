@@ -6,6 +6,7 @@ import com.imp.common.JsonData;
 import com.imp.model.SysRole;
 import com.imp.param.AclParam;
 import com.imp.service.SysAclService;
+import com.imp.service.SysRoleService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,8 +24,8 @@ public class SysAclController {
 
     @Resource
     private SysAclService sysAclService;
-//    @Resource
-//    private SysRoleService sysRoleService;
+    @Resource
+    private SysRoleService sysRoleService;
 
     @RequestMapping("/save.json")
     @ResponseBody
@@ -50,9 +51,9 @@ public class SysAclController {
     @ResponseBody
     public JsonData acls(@RequestParam("aclId") int aclId) {
         Map<String, Object> map = Maps.newHashMap();
-        //List<SysRole> roleList = sysRoleService.getRoleListByAclId(aclId);
-        //map.put("roles", roleList);
-        //map.put("users", sysRoleService.getUserListByRoleList(roleList));
+        List<SysRole> roleList = sysRoleService.getRoleListByAclId(aclId);
+        map.put("roles", roleList);
+        map.put("users", sysRoleService.getUserListByRoleList(roleList));
         return JsonData.success(map);
     }
 }

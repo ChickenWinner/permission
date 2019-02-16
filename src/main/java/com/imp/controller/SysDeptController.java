@@ -60,4 +60,11 @@ public class SysDeptController {
        return JsonData.success("更新部门成功");
     }
 
+    @RequestMapping("/delete.json")
+    @ResponseBody
+    public JsonData delete(int id) {
+        sysDeptService.delete(id);
+        return JsonData.success();
+    }
+
 }

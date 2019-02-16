@@ -3,9 +3,13 @@ package com.imp.service;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.imp.common.RequestHolder;
+import com.imp.dao.SysRoleAclMapper;
 import com.imp.dao.SysRoleMapper;
+import com.imp.dao.SysRoleUserMapper;
+import com.imp.dao.SysUserMapper;
 import com.imp.exception.ParamException;
 import com.imp.model.SysRole;
+import com.imp.model.SysUser;
 import com.imp.param.RoleParam;
 import com.imp.util.BeanValidator;
 import com.imp.util.IpUtil;
@@ -22,12 +26,12 @@ public class SysRoleService {
 
     @Resource
     private SysRoleMapper sysRoleMapper;
-//    @Resource
-//    private SysRoleUserMapper sysRoleUserMapper;
-//    @Resource
-//    private SysRoleAclMapper sysRoleAclMapper;
-//    @Resource
-//    private SysUserMapper sysUserMapper;
+    @Resource
+    private SysRoleUserMapper sysRoleUserMapper;
+    @Resource
+    private SysRoleAclMapper sysRoleAclMapper;
+    @Resource
+    private SysUserMapper sysUserMapper;
 //    @Resource
 //    private SysLogService sysLogService;
 
@@ -72,31 +76,34 @@ public class SysRoleService {
         return sysRoleMapper.countByName(name, id) > 0;
     }
 
-//    public List<SysRole> getRoleListByUserId(int userId) {
-//        List<Integer> roleIdList = sysRoleUserMapper.getRoleIdListByUserId(userId);
-//        if (CollectionUtils.isEmpty(roleIdList)) {
-//            return Lists.newArrayList();
-//        }
-//        return sysRoleMapper.getByIdList(roleIdList);
-//    }
-//
-//    public List<SysRole> getRoleListByAclId(int aclId) {
-//        List<Integer> roleIdList = sysRoleAclMapper.getRoleIdListByAclId(aclId);
-//        if (CollectionUtils.isEmpty(roleIdList)) {
-//            return Lists.newArrayList();
-//        }
-//        return sysRoleMapper.getByIdList(roleIdList);
-//    }
-//
-//    public List<SysUser> getUserListByRoleList(List<SysRole> roleList) {
-//        if (CollectionUtils.isEmpty(roleList)) {
-//            return Lists.newArrayList();
-//        }
-//        List<Integer> roleIdList = roleList.stream().map(role -> role.getId()).collect(Collectors.toList());
-//        List<Integer> userIdList = sysRoleUserMapper.getUserIdListByRoleIdList(roleIdList);
-//        if (CollectionUtils.isEmpty(userIdList)) {
-//            return Lists.newArrayList();
-//        }
-//        return sysUserMapper.getByIdList(userIdList);
-//    }
+    // 查询用户已分配的角色
+    public List<SysRole> getRoleListByUserId(int userId) {
+        List<Integer> roleIdList = sysRoleUserMapper.getRoleIdListByUserId(userId);
+        if (CollectionUtils.isEmpty(roleIdList)) {
+            return Lists.newArrayList();
+        }
+        return sysRoleMapper.getByIdList(roleIdList);
+    }
+
+    // 当前权限点分配给的角色
+    public List<SysRole> getRoleListByAclId(int aclId) {
+        List<Integer> roleIdList = sysRoleAclMapper.getRoleIdListByAclId(aclId);
+        if (CollectionUtils.isEmpty(roleIdList)) {
+            return Lists.newArrayList();
+        }
+        return sysRoleMapper.getByIdList(roleIdList);
+    }
+
+    // 当前权限点分配给的用户
+    public List<SysUser> getUserListByRoleList(List<SysRole> roleList) {
+        if (CollectionUtils.isEmpty(roleList)) {
+            return Lists.newArrayList();
+        }
+        List<Integer> roleIdList = roleList.stream().map(role -> role.getId()).collect(Collectors.toList());
+        List<Integer> userIdList = sysRoleUserMapper.getUserIdListByRoleIdList(roleIdList);
+        if (CollectionUtils.isEmpty(userIdList)) {
+            return Lists.newArrayList();
+        }
+        return sysUserMapper.getByIdList(userIdList);
+    }
 }
