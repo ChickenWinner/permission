@@ -76,36 +76,44 @@ public class SysCoreService {
         return false;
     }
 
-//
-//    public boolean hasUrlAcl(String url) {
-//        if (isSuperAdmin()) {
-//            return true;
-//        }
-//        List<SysAcl> aclList = sysAclMapper.getByUrl(url);
-//        if (CollectionUtils.isEmpty(aclList)) {
-//            return true;
-//        }
-//
+
+    public boolean hasUrlAcl(String url) {
+        // 如果是超级管理员 拥有权限
+        if (isSuperAdmin()) {
+            return true;
+        }
+        // 通过url查询权限点
+        List<SysAcl> aclList = sysAclMapper.getByUrl(url);
+        // 如果权限点为空，说明不在意的url，放行
+        if (CollectionUtils.isEmpty(aclList)) {
+            return true;
+        }
+
 //        List<SysAcl> userAclList = getCurrentUserAclListFromCache();
-//        Set<Integer> userAclIdSet = userAclList.stream().map(acl -> acl.getId()).collect(Collectors.toSet());
-//
-//        boolean hasValidAcl = false;
-//        // 规则：只要有一个权限点有权限，那么我们就认为有访问权限
-//        for (SysAcl acl : aclList) {
-//            // 判断一个用户是否具有某个权限点的访问权限
-//            if (acl == null || acl.getStatus() != 1) { // 权限点无效
-//                continue;
-//            }
-//            hasValidAcl = true;
-//            if (userAclIdSet.contains(acl.getId())) {
-//                return true;
-//            }
-//        }
-//        if (!hasValidAcl) {
-//            return true;
-//        }
-//        return false;
-//    }
+        // 获取当前用户的权限点
+        List<SysAcl> userAclList = getCurrentUserAclList();
+        // 将权限点ID取出生成set
+        Set<Integer> userAclIdSet = userAclList.stream().map(acl -> acl.getId()).collect(Collectors.toSet());
+
+        // 防止权限点全无效，没有返回true
+        boolean hasValidAcl = false;
+        // 规则：只要有一个权限点有权限，那么我们就认为有访问权限
+
+        for (SysAcl acl : aclList) {
+            // 判断一个用户是否具有某个权限点的访问权限
+            if (acl == null || acl.getStatus() != 1) { // 权限点无效
+                continue;
+            }
+            hasValidAcl = true;
+            if (userAclIdSet.contains(acl.getId())) {
+                return true;
+            }
+        }
+        if (!hasValidAcl) {
+            return true;
+        }
+        return false;
+    }
 
 //    public List<SysAcl> getCurrentUserAclListFromCache() {
 //        int userId = RequestHolder.getCurrentUser().getId();
