@@ -1,12 +1,14 @@
 package com.imp.service;
 
 import com.google.common.collect.Lists;
+import com.imp.beans.CacheKeyConstants;
 import com.imp.common.RequestHolder;
 import com.imp.dao.SysAclMapper;
 import com.imp.dao.SysRoleAclMapper;
 import com.imp.dao.SysRoleUserMapper;
 import com.imp.model.SysAcl;
 import com.imp.model.SysUser;
+import com.imp.util.JsonMapper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jackson.type.TypeReference;
@@ -26,8 +28,8 @@ public class SysCoreService {
     private SysRoleUserMapper sysRoleUserMapper;
     @Resource
     private SysRoleAclMapper sysRoleAclMapper;
-//    @Resource
-//    private SysCacheService sysCacheService;
+    @Resource
+    private SysCacheService sysCacheService;
 
     // 得到当前用户的权限集合
     public List<SysAcl> getCurrentUserAclList() {
@@ -53,16 +55,17 @@ public class SysCoreService {
         if (isSuperAdmin()) {
             return sysAclMapper.getAll();
         }
-        // 根据用户id得到相应的角色集合
+        // 根据用户id得到相应的角色ID集合
         List<Integer> userRoleIdList = sysRoleUserMapper.getRoleIdListByUserId(userId);
         if (CollectionUtils.isEmpty(userRoleIdList)) {
             return Lists.newArrayList();
         }
-        // 根据角色id得到相应的权限
+        // 根据角色id得到相应的权限ID
         List<Integer> userAclIdList = sysRoleAclMapper.getAclIdListByRoleIdList(userRoleIdList);
         if (CollectionUtils.isEmpty(userAclIdList)) {
             return Lists.newArrayList();
         }
+        // 根据权限ID获取权限
         return sysAclMapper.getByIdList(userAclIdList);
     }
 
@@ -89,9 +92,9 @@ public class SysCoreService {
             return true;
         }
 
-//        List<SysAcl> userAclList = getCurrentUserAclListFromCache();
+        List<SysAcl> userAclList = getCurrentUserAclListFromCache();
         // 获取当前用户的权限点
-        List<SysAcl> userAclList = getCurrentUserAclList();
+        //List<SysAcl> userAclList = getCurrentUserAclList();
         // 将权限点ID取出生成set
         Set<Integer> userAclIdSet = userAclList.stream().map(acl -> acl.getId()).collect(Collectors.toSet());
 
@@ -115,17 +118,22 @@ public class SysCoreService {
         return false;
     }
 
-//    public List<SysAcl> getCurrentUserAclListFromCache() {
-//        int userId = RequestHolder.getCurrentUser().getId();
-//        String cacheValue = sysCacheService.getFromCache(CacheKeyConstants.USER_ACLS, String.valueOf(userId));
-//        if (StringUtils.isBlank(cacheValue)) {
-//            List<SysAcl> aclList = getCurrentUserAclList();
-//            if (CollectionUtils.isNotEmpty(aclList)) {
-//                sysCacheService.saveCache(JsonMapper.obj2String(aclList), 600, CacheKeyConstants.USER_ACLS, String.valueOf(userId));
-//            }
-//            return aclList;
-//        }
-//        return JsonMapper.string2Obj(cacheValue, new TypeReference<List<SysAcl>>() {
-//        });
-//    }
+    public List<SysAcl> getCurrentUserAclListFromCache() {
+        // 获取当前用户的ID
+        int userId = RequestHolder.getCurrentUser().getId();
+        // 从redis中取值
+        String cacheValue = sysCacheService.getFromCache(CacheKeyConstants.USER_ACLS, String.valueOf(userId));
+        // 如果是空
+        if (StringUtils.isBlank(cacheValue)) {
+            // 查询数据库
+            List<SysAcl> aclList = getCurrentUserAclList();
+            // 将值缓存到redis
+            if (CollectionUtils.isNotEmpty(aclList)) {
+                sysCacheService.saveCache(JsonMapper.obj2String(aclList), 600, CacheKeyConstants.USER_ACLS, String.valueOf(userId));
+            }
+            return aclList;
+        }
+        return JsonMapper.string2Obj(cacheValue, new TypeReference<List<SysAcl>>() {
+        });
+    }
 }

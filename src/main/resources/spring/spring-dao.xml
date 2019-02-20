@@ -31,6 +31,7 @@
     </bean>
 
     <!-- 配置sqlSessionFactory -->
+    <!-- 数据库会话工厂 -->
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <!-- 数据库连接池 -->
         <property name="dataSource" ref="dataSource"></property>
@@ -50,5 +51,7 @@
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
     </bean>
 
+    <!-- 引入redis配置 -->
+    <import resource="../redis.xml" />
 
 </beans>
